@@ -1,3 +1,12 @@
+// HTML模块为一个简化版的购物车，tbody为商品列表，tfoot为统计信息，系统会随机在列表中生成一些初始商品信息
+// 1、请完成add函数，在列表后面显示items商品信息。参数items为{name: String, price: Number}组成的数组
+// 2、请完成bind函数，点击每一行的删除按钮(包括通过add增加的行)，从列表中删除对应行
+// 3、请注意同步更新统计信息，所有价格保留小数点后两位
+// 4、列表和统计信息格式请与HTML示例保持一致
+// 5、不要直接手动修改HTML中的代码
+// 6、不要使用第三方库
+
+
 function add() {
     var item = { name: '鸡蛋', price: 45 }
     var tbody = document.getElementsByTagName('tbody')[0];

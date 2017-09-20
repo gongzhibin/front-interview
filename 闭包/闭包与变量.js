@@ -1,7 +1,3 @@
-/**
- * Created by zxlg on 2017/4/14.
- */
-
 //闭包
 function count() {
     var arr = [];
@@ -21,11 +17,13 @@ function count1() {
         // 但是由于JavaScript语法解析的问题，会报SyntaxError错误，
         // 因此需要用括号把整个函数定义括起来：
         //(function (x) { return x * x }) (3);
-        arr.push((function (n) {
-            return function () {
-                return n * n;
-            }
-        })(i));
+        arr.push(
+            (function (n) {
+                return function () {
+                    return n * n;
+                }
+            })(i)
+        );
     }
     return arr;
 }

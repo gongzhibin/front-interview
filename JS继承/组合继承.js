@@ -11,7 +11,8 @@ function son(name, age) {
     parent.call(this, name);
     this.age = age;
 }
-son.prototype = new parent();
+// son.prototype = new parent();
+son.prototype = Object.create(parent.prototype);
 son.prototype.constructor = son;
 son.prototype.sayAge = function () {
     console.log(this.age);

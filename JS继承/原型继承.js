@@ -8,8 +8,11 @@ parent.prototype.getParentAge = function () {
 function son() {
     this.age = 25;
 }
-son.prototype = new parent();
-son.prototype.getSonAge = function(){
+
+// son.prototype = new parent();
+// 原型继承继承父类，不应包含其私有属性
+son.prototype = Object.create(parent.prototype);
+son.prototype.getSonAge = function () {
     return this.age;
 }
 

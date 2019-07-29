@@ -72,7 +72,7 @@ Object.defineProperty(Dog.prototype, 'constructor', {
 
 // 1.4 Object.setPrototypeOf + constructor
 // 缺陷：这个方式表现并不好，应该被弃用。1.如果你在生产环境中使用这个方法，那么快速运行 Javascript 就是不可能的，因为许多浏览器优化了原型，尝试在调用实例之前猜测方法在内存中的位置，但是动态设置原型干扰了所有的优化，甚至可能使浏览器为了运行成功，使用完全未经优化的代码进行重编译。2.不支持 IE8 及以下的浏览器版本。
-Object.setPrototypeOf(Dog.prototype, Animal.prototype);
+Dog.prototype = Object.setPrototypeOf({}, Animal.prototype);
 Object.defineProperty(Dog.prototype, 'constructor', {
     enumerable: false,
     value: Dog

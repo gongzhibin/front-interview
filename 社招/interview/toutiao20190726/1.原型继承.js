@@ -1,4 +1,7 @@
 // 1. 原型继承
+// https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain
+// https://www.liaoxuefeng.com/wiki/1022910821149312/1023021997355072
+// http://www.ruanyifeng.com/blog/2010/05/object-oriented_javascript_inheritance.html
 function Animal() {
     this.name = 'animal';
 }
@@ -30,7 +33,9 @@ console.log(blackDog.name);
 console.log(blackDog.eat());
 
 // 1.2. __proto__
-// 缺陷：__proto__这个属性不应该被用户直接访问并修改
+// 缺陷:1.__proto__这个属性不应该被用户直接访问并修改
+//      2. 应该完全将其抛弃，因为这个行为完全不具备性能可言，许多浏览器优化了原型
+//      3.不支持 IE10 及以下的浏览器版本。
 Dog.prototype.__proto__ = Animal.prototype;
 
 const yellowDog = new Dog();
@@ -51,6 +56,9 @@ console.log(yellowDog instanceof Animal);
 
 
 // 1.3 Object.create + constructor
+// 缺陷：1. 不支持 IE8 以下的版本;
+//      2.这个慢对象初始化在使用第二个参数的时候有可能成为一个性能黑洞，因为每个对象的描述符属性都有自己的描述对象。当以对象的格式处理成百上千的对象描述的时候，可能会造成严重的性能问题。
+
 function Dog() {
     Animal.apply(this, arguments); // apply super constructor.
     this.name = 'dog';
@@ -62,11 +70,38 @@ Object.defineProperty(Dog.prototype, 'constructor', {
     value: Dog
 });
 
+// 1.4 Object.setPrototypeOf + constructor
+// 缺陷：这个方式表现并不好，应该被弃用。1.如果你在生产环境中使用这个方法，那么快速运行 Javascript 就是不可能的，因为许多浏览器优化了原型，尝试在调用实例之前猜测方法在内存中的位置，但是动态设置原型干扰了所有的优化，甚至可能使浏览器为了运行成功，使用完全未经优化的代码进行重编译。2.不支持 IE8 及以下的浏览器版本。
+Object.setPrototypeOf(Dog.prototype, Animal.prototype);
+Object.defineProperty(Dog.prototype, 'constructor', {
+    enumerable: false,
+    value: Dog
+});
+
+// 1.5 中介 + new + constructor
+function F() {}
+F.prototype = Animal.prototype;
+Dog.prototype = new Animal();
+Object.defineProperty(Dog.prototype, 'constructor', {
+    enumerable: false,
+    value: Dog
+});
+
+// 封装函数
+function extend(Child, Parent) {
+    var F = function() {};
+    F.prototype = Parent.prototype;
+    Child.prototype = new F();
+    Object.defineProperty(Child.prototype, 'constructor', {
+        enumerable: false,
+        value: Child
+    });
+}
+
 // 实例的原型指向构造函数的原型对象
 new Dog().__proto__ === Dog.prototype;
 
-
-// 1.3. class extends
+// 1.6. class extends
 class Person {
     constructor() {
         this.name = 'person';

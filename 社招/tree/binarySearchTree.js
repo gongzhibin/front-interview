@@ -178,4 +178,3 @@ console.log(bst.postOrder());
 console.log(bst.getMinNode().value, bst.getMaxNode().value, bst.hasValue(8), bst.hasValue(9));
 bst.removeNode(8);
 console.log(bst.inOrder());
-

@@ -1,8 +1,10 @@
-// BST定义 对于任意一个节点均满足：
-// 1. 所有位于左子树的节点值均比该节点值小
-// 2. 所有位于右子树的节点值均大于等于该节点值
-// 3. 所有左子树和右子树也必须是BST
-class Node {
+// 简明RBTREE定义(Knuth Donald)：
+// 1. 每个节点要么是红色，要么是黑色
+// 2. 根节点是黑色
+// 3. 所有叶节点(NIL)都是黑色
+// 4. 如果一个节点是红色，那么它的两个孩子都是黑色
+// 5. 从任意一个节点出发，到达其后代NIL节点的路径中都包含相同个数的黑节点
+class redBlackNode {
     constructor(value, leftChild, rightChild) {
         this.value = value;
         this.leftChild = leftChild;

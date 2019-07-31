@@ -7,12 +7,12 @@ function Animal() {
 }
 
 Animal.prototype.eat = function(){
-  return 'can eat';
-}
+    return 'can eat';
+};
 
 function Dog() {
     this.name = 'dog';
-};
+}
 
 // function Dog() {
 //     Animal.apply(this, arguments); // apply super constructor.
@@ -31,7 +31,9 @@ console.log(blackDog.constructor === Animal); // true
 //修正Dog.prototype被覆盖之后的Dog.prototype.constructor
 Object.defineProperty(Dog.prototype, 'constructor', {
     enumerable: false,
-    value: Dog
+    value: Dog,
+    writable: true,
+    configurable: true
 });
 
 console.log(blackDog.name);
@@ -66,7 +68,9 @@ console.log(yellowDog instanceof Animal);
 Dog.prototype = Object.setPrototypeOf({}, Animal.prototype);
 Object.defineProperty(Dog.prototype, 'constructor', {
     enumerable: false,
-    value: Dog
+    value: Dog,
+    writable: true,
+    configurable: true
 });
 
 
@@ -76,7 +80,9 @@ Object.defineProperty(Dog.prototype, 'constructor', {
 Dog.prototype = Object.create(Animal.prototype);
 Object.defineProperty(Dog.prototype, 'constructor', {
     enumerable: false,
-    value: Dog
+    value: Dog,
+    writable: true,
+    configurable: true
 });
 
 
@@ -86,7 +92,9 @@ F.prototype = Animal.prototype;
 Dog.prototype = new Animal();
 Object.defineProperty(Dog.prototype, 'constructor', {
     enumerable: false,
-    value: Dog
+    value: Dog,
+    writable: true,
+    configurable: true
 });
 
 // 封装函数
@@ -117,6 +125,7 @@ class Person {
 
 class Asian extends Person {
     constructor() {
+        super();
         this.name = 'asian';
     }
 }

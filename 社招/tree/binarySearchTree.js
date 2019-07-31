@@ -53,16 +53,16 @@ class BST {
 
     // 3. 删除节点
     removeNode(value, root = this.root) {
-        __remove(root, value);
-        function __remove(node, value) {
+        _remove(root, value);
+        function _remove(node, value) {
             if (node === null) {
                 return null;
             }
             if (value < node.value) {
-                node.leftChild = __remove(node.leftChild, value);
+                node.leftChild = _remove(node.leftChild, value);
                 return node;
             } else if (value > node.value) {
-                node.rightChild = __remove(node.rightChild, value);
+                node.rightChild = _remove(node.rightChild, value);
                 return node;
             } else {
                 // 三种情况
@@ -86,7 +86,7 @@ class BST {
                 // 返回右子树的根节点，并用寻找到的节点的值替代该值，删除寻找到的节点
                 const newNode = BST.prototype.getMinNode(node.rightChild);
                 node.value = newNode.value; 
-                node.rightChild = __remove(node.rightChild, node.value);
+                node.rightChild = _remove(node.rightChild, node.value);
                 return node;
             }
         }
@@ -96,12 +96,12 @@ class BST {
     // 前序遍历: 根左右
     preOrder(root = this.root) {
         const res = [];
-        __preOrder(root);
-        function __preOrder(node) {
+        _preOrder(root);
+        function _preOrder(node) {
             if (node !== null) {
                 res.push(node.value);
-                __preOrder(node.leftChild);
-                __preOrder(node.rightChild);
+                _preOrder(node.leftChild);
+                _preOrder(node.rightChild);
             }
         }
         return res;
@@ -110,12 +110,12 @@ class BST {
     // 中序遍历: 左根右
     inOrder(root = this.root) {
         const res = [];
-        __inOrder(root);
-        function __inOrder(node) {
+        _inOrder(root);
+        function _inOrder(node) {
             if (node !== null) {
-                __inOrder(node.leftChild);
+                _inOrder(node.leftChild);
                 res.push(node.value);
-                __inOrder(node.rightChild);
+                _inOrder(node.rightChild);
             }
         }
         return res;
@@ -124,11 +124,11 @@ class BST {
     // 后序遍历: 左右根
     postOrder(root = this.root) {
         const res = [];
-        __postOrder(root);
-        function __postOrder(node) {
+        _postOrder(root);
+        function _postOrder(node) {
             if (node !== null) {
-                __postOrder(node.leftChild);
-                __postOrder(node.rightChild);
+                _postOrder(node.leftChild);
+                _postOrder(node.rightChild);
                 res.push(node.value);
             }
         }

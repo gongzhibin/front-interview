@@ -3,28 +3,45 @@
 // 2. 所有位于右子树的节点值均大于等于该节点值
 // 3. 所有左子树和右子树也必须是BST
 class Node {
-    constructor(value, leftChild, rightChild) {
+    constructor(value) {
         this.value = value;
-        this.leftChild = leftChild;
-        this.rightChild = rightChild;
+        this.leftChild = null;
+        this.rightChild = null;
+        this.parent = null;
+    }
+    get uncle() {
+        if (!this.parent) {
+            return undefined;
+        }
+        if (!this.parent.parent) {
+            return undefined;
+        }
+        if (!this.parent.parent.left || !this.parent.parent.right) {
+            return undefined;
+        }
+        if (this.parent === this.parent.parent.left) {
+            return this.parent.parent.right;
+        }
+        return this.parent.parent.left;
     }
 }
 
 class BST {
-    constructor() {
+    constructor(arr) {
         this.root = null;
+        this.create(arr);
     }
 
     // 基于数组构建二叉查找树
-    arrToTree(arr) {
+    create(arr) {
         arr.forEach((item) => {
-           this.insert(item); 
+            this.insert(item); 
         });
     }
 
     // 1. 树的节点插入
     insert(value) {
-        const node = new Node(value, null, null);
+        const node = new Node(value);
     
         if (this.root === null) {
             this.root = node;
@@ -39,16 +56,19 @@ class BST {
                 current = current.leftChild;
                 if (current === null) {
                     parent.leftChild = node;
+                    node.parent = parent;
                     break;
                 }
             } else {
                 current = current.rightChild;
                 if (current === null) {
                     parent.rightChild = node;
+                    node.parent = parent;
                     break;
                 }
             }
         }
+        return node;
     }
 
     // 3. 删除节点
@@ -170,11 +190,12 @@ class BST {
     }
 }
 
-const bst = new BST();
-bst.arrToTree([5, 3, 4, 1, 8, 7, 9]);
+const bst = new BST([5, 3, 4, 1, 8, 7, 9]);
 console.log(bst.preOrder());
 console.log(bst.inOrder());
 console.log(bst.postOrder());
 console.log(bst.getMinNode().value, bst.getMaxNode().value, bst.hasValue(8), bst.hasValue(9));
 bst.removeNode(8);
 console.log(bst.inOrder());
+
+module.export = BST;

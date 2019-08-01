@@ -20,7 +20,7 @@ rl.on('line', function (input) {
         }
         arr.sort(function (a, b) {
             return a - b;
-        })
+        });
         var length = arr.length;
         var half_length = arr.length / 2;
         var sum1 = 0;
@@ -43,10 +43,10 @@ rl.on('line', function (input) {
             }
             if (sum1 - sum2 > 0) {
                 sum1 += arr[half_length - 1];
-                sum2 += arr[half_length]
+                sum2 += arr[half_length];
             }else{
                 sum2 += arr[half_length - 1];
-                sum1 += arr[half_length]
+                sum1 += arr[half_length];
             }
         }
         console.log(Math.abs(sum1-sum2));

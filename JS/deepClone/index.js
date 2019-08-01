@@ -37,7 +37,7 @@ var obj = {
     add: function() {
         return 1;
     }
-}
+};
 
 var newObj = deepCopy(obj);
-console.log(newObj.add === obj.add)
+console.log(newObj.add === obj.add);

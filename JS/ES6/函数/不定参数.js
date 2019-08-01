@@ -12,6 +12,6 @@ let person = {
     name: 'zxlg',
     age: 24,
     sex: 'boy'
-}
+};
 let me = restParm(person, 'name', 'age');
 console.log(me.age);

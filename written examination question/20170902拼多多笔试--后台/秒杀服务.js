@@ -120,7 +120,7 @@ function getList(time) {
     //商品ID从小到大排序(默认)
     timing_solding.sort(function (a, b) {
         return b[1][2] - a[1][2];
-    })
+    });
 
     // 2 进行中(售罄）
     // 依次按最后卖出时间从晚到早
@@ -132,7 +132,7 @@ function getList(time) {
         } else {
             return b[1][2] - a[1][2];
         }
-    })
+    });
 
     // 3 未开始
     // 依次按开始时间从早到晚
@@ -140,11 +140,11 @@ function getList(time) {
     // 商品ID从小到大排序
     no_timing.sort(function (a, b) {
         if (a[1][3] != b[1][3]) {
-            return a[1][3] - b[1][3]
+            return a[1][3] - b[1][3];
         } else {
             return b[1][2] - a[1][2];
         }
-    })
+    });
 
 
     // 定义最终排序activityId数组

@@ -1,11 +1,11 @@
 /**
  * Created by zxlg on 2017/4/20.
  */
-var readline = require('readline')
+var readline = require('readline');
 var rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
-})
+});
 var arr = [];
 var newArr = [];
 rl.on('line', function (input) {
@@ -27,4 +27,4 @@ rl.on('line', function (input) {
         }
         console.log(newArr.join('\n'));
     }
-})
+});

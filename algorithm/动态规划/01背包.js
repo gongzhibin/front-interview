@@ -8,11 +8,11 @@ var value = [8, 10, 4, 5, 5];
 var weight = [6, 4, 2, 4, 3];
 var dp = [];
 for (var i = 0; i < n + 1; i++) {
-    dp[i] = []
+    dp[i] = [];
     for (var j = 0; j < v + 1; j++) {
         dp[i][j] = 0;
     }
-}`` 
+}''; 
 
 for (var i = 1; i <= n; i++) {
     for (var j = 1; j <= v; j++) {
@@ -24,4 +24,4 @@ for (var i = 1; i <= n; i++) {
         }
     }
 }
-console.log(dp)
+console.log(dp);

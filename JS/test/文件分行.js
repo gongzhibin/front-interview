@@ -4,8 +4,8 @@
 var fs = require('fs');
 var path = require('path');
 
-var fs = require("fs");
-var data = fs.readFileSync("C:\\Users\\zxlg\\Desktop\\新建文本文档.txt");
+var fs = require('fs');
+var data = fs.readFileSync('C:\\Users\\zxlg\\Desktop\\新建文本文档.txt');
 var str = data.toString();
 var arr = str.split(' ');
 var num = parseInt(arr[0]);

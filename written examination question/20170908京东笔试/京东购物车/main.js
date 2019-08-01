@@ -8,7 +8,7 @@
 
 
 function add() {
-    var item = { name: '鸡蛋', price: 45 }
+    var item = { name: '鸡蛋', price: 45 };
     var tbody = document.getElementsByTagName('tbody')[0];
     var addItem = document.createElement('tr');
     addItem.innerHTML = '<td>' + item.name + '</td><td>' + item.price.toFixed(2)

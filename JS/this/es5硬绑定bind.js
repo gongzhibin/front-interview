@@ -1,12 +1,12 @@
 // 由于 硬绑定 是一个如此常用的模式
 //它已作为 ES5 的内建工具提供：Function.prototype.bind
 function foo(something) {
-	console.log( this.a, something );
-	return this.a + something;
+    console.log( this.a, something );
+    return this.a + something;
 }
 
 var obj = {
-	a: 2
+    a: 2
 };
 
 var bar = foo.bind( obj );

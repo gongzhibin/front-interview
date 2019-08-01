@@ -1,5 +1,5 @@
 function foo(num) {
-    console.log("foo: " + num);
+    console.log('foo: ' + num);
     // 追踪 `foo` 被调用了多少次
     this.count++;
     data.count++;

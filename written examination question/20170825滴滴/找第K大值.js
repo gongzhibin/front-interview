@@ -18,7 +18,7 @@ rl.on('line', function (input) {
         K = parseInt(input);
         arr.sort(function (a, b) {
             return a - b;
-        })
+        });
         console.log(arr[arr.length - K]);
 
         //初始化

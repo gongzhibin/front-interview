@@ -13,8 +13,8 @@ var template = function(str){
             //替换match
             return obj[p1];
         });
-    }
-}
+    };
+};
 var complied = template('hello <%=user%>');
 var str1 = complied({'user': 'zxlg'});
 console.log(str1);

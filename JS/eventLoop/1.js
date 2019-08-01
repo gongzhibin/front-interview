@@ -16,14 +16,14 @@
 setTimeout(() => { // 宏2
     console.log('a');
     new Promise(res => {
-        res()
+        res();
     }).then(() => {
         console.log('c');
-    })
+    });
     process.nextTick(() => {
         console.log('h');
-    })
-}, 0)
+    });
+}, 0);
 console.log('b');
 
 process.nextTick(() => { // 微1
@@ -32,12 +32,12 @@ process.nextTick(() => { // 微1
         console.log('e');
         process.nextTick(() => {
             console.log('f');
-        })
-    })
-}) 
+        });
+    });
+}); 
     
 setImmediate(() => { // 微2 （// 宏3，理解错误，为宏任务，且优先级较低）
     console.log('g');
-})
+});
 // 我的 b d e g f a h c
 //  b d e f a h c g

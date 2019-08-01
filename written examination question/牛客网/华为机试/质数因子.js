@@ -1,15 +1,15 @@
 /**
  * Created by zxlg on 2017/4/20.
  */
-var readline = require('readline')
+var readline = require('readline');
 var rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
-})
+});
 rl.on('line', function (input) {
     var num = parseInt(input);
     getResult(num);
-})
+});
 
 var getResult = function (num) {
     var arr = [];
@@ -23,7 +23,7 @@ var getResult = function (num) {
         }
     }
     console.log(arr.join(' '));
-}
+};
 //
 // /**
 //  * Created by zxlg on 2017/4/20.

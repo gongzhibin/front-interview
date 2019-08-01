@@ -3,7 +3,7 @@ function parent() {
 }
 parent.prototype.getParentAge = function () {
     return this.age;
-}
+};
 
 function son() {
     this.age = 25;
@@ -14,7 +14,7 @@ function son() {
 son.prototype = Object.create(parent.prototype);
 son.prototype.getSonAge = function () {
     return this.age;
-}
+};
 
 let instance = new son();
 let sonAge = son.getSonAge();

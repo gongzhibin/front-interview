@@ -4,11 +4,11 @@ function a() {
 
 let b = function () {
 
-}
+};
 
 let what = function c() {
 
-}
+};
 
 let person = {
     get firstName() {
@@ -17,7 +17,7 @@ let person = {
     sayName: function () {
 
     }
-}
+};
 
 let d = a.bind();
 let e = new Function();

@@ -18,7 +18,7 @@ fs.readFile('E:/论文/数据库检索/数据/data1.txt', function (err, data) {
             writeData += id + ',' + arr[index] + '\r\n';
         }
         fs.writeFile('E:/论文/数据库检索/数据/data.txt', writeData, (err) => {
-            console.log(err)
+            console.log(err);
         });
     }
-})
+});

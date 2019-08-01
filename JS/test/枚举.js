@@ -5,13 +5,13 @@ var obj = {
     'c': 3
 };
 Object.prototype.age = 24;
-Object.defineProperty(obj, "school", {
+Object.defineProperty(obj, 'school', {
     configurable: true,
     writable: true,
     //枚举的属性为enumerable
     enumerable: true,
     value: 'whut'
-})
+});
 // var a = Object.keys(obj);
 for (var index in obj) {
     if (obj.hasOwnProperty(index)) {

@@ -14,5 +14,5 @@ function tag(literal, ...substitutions) {
 
 let count = 10;
 let price = 0.25;
-let msg = tag`${count} items cost $${(count * price).toFixed(2)}.`
+let msg = tag`${count} items cost $${(count * price).toFixed(2)}.`;
 console.log(msg);

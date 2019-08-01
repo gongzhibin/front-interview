@@ -14,7 +14,7 @@ rl.on('line', function (input) {
             }
         }
         return length;
-    }
+    };
     var answer = test(str.slice(0, -2));
     while (answer == -1) {
         str = str.slice(0, -2);

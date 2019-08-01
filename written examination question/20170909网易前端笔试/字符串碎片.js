@@ -67,7 +67,7 @@ function solution(str) {
     for (var i = 1; i < str.length; i++) {
         var temp = str.charAt(i);
         if (temp == last) {
-            len++
+            len++;
         } else {
             len_count += len;
             len = 1;

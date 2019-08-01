@@ -5,8 +5,8 @@
 process.stdin.resume();
 process.stdin.setEncoding('ascii');
 
-var input = "";
-var input_array = "";
+var input = '';
+var input_array = '';
 var count = 0;
 
 process.stdin.on('data', function (data) {
@@ -14,7 +14,7 @@ process.stdin.on('data', function (data) {
 });
 
 process.stdin.on('end', function () {
-    input_array = input.split("\n");
+    input_array = input.split('\n');
     var str = input_array[0].toLowerCase();
     var char = input_array[1].toLowerCase();
     for (var i = 0; i < str.length; i++) {

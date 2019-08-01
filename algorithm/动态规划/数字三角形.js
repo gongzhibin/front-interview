@@ -101,4 +101,4 @@ var solution = function (n, arr) {
         }
     }
     return max;
-}
+};

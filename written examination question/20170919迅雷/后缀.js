@@ -19,7 +19,7 @@ String.prototype.getSuffixList = function (suffix) {
     }
     sortArr.sort(function(a,b){
         return b[1] -  a[1];
-    })
+    });
     var result = '';
     for (var index in sortArr) {
 

@@ -13,7 +13,7 @@ function GetLeastNumbers_Solution(input, k) {
             min.push(input[i]);
             min.sort(function (a, b) {
                 return a - b;
-            })
+            });
         }
     }
     return min;

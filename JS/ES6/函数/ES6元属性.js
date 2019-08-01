@@ -2,7 +2,7 @@ function Person(name) {
     if (typeof new.target !== 'undefined') {
         this.name = name;
     } else {
-        throw new Error('必须通过new关键字调用Person')
+        throw new Error('必须通过new关键字调用Person');
     }
 }
 

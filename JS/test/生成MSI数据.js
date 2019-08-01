@@ -60,7 +60,7 @@ var addItem = function () {
     // console.log(jsonStr);
     // return jsonStr;
     return str;
-}
+};
 
 var newStr = '';
 // var newArr = new Array();
@@ -74,10 +74,10 @@ for (var i = 0; i < 10000; i++) {
 //         console.log("写入json成功！")
 // })
 
-fs.writeFile("E:\\mmsi.txt", newStr, function (err) {
+fs.writeFile('E:\\mmsi.txt', newStr, function (err) {
     if (!err)
-        console.log("写入txt成功！")
-})
+        console.log('写入txt成功！');
+});
 // fs.writeFile("E:\\mmsi.csv", newStr, function (err) {
 //     if (!err)
 //         console.log("写入csv成功！")

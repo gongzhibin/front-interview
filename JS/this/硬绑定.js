@@ -1,13 +1,13 @@
 function foo() {
-	console.log( this.a );
+    console.log( this.a );
 }
 
 var obj = {
-	a: 2
+    a: 2
 };
 
 var bar = function() {
-	foo.call( obj );
+    foo.call( obj );
 };
 
 bar(); // 2

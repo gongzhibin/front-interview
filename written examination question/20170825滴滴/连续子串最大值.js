@@ -3,7 +3,7 @@ const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-var arr = []
+var arr = [];
 rl.on('line', function (input) {
     arr = input.split(' ');
     var res = maxsequence(arr);

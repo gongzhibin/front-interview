@@ -5,7 +5,7 @@ function parent(name) {
 
 parent.prototype.sayName = function () {
     console.log(this.name);
-}
+};
 
 function son(name, age) {
     parent.call(this, name);
@@ -16,7 +16,7 @@ son.prototype = Object.create(parent.prototype);
 son.prototype.constructor = son;
 son.prototype.sayAge = function () {
     console.log(this.age);
-}
+};
 
 var instance1 = new son('zxlg', 24);
 instance1.colors.push('black');

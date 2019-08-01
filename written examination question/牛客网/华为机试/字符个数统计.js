@@ -1,11 +1,11 @@
 /**
  * Created by zxlg on 2017/4/21.
  */
-var readline = require('readline')
+var readline = require('readline');
 var rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
-})
+});
 var arr = [];
 var count = 0;
 
@@ -22,7 +22,7 @@ rl.on('line', function (input) {
         }
     }
     console.log(count);
-})
+});
 
 //时间复杂度过高
 // rl.on('line', function (input) {

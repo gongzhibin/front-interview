@@ -25,13 +25,13 @@ while (line = read_line()) {
             }
         }
         for(var i=0;i<n;j++)
-        flag = 0;
+            flag = 0;
         x = [];
         y = [];
         answer = [];
     } else {
         temp = line.split(' ');
-        x[flag] = parseInt(temp[0])
+        x[flag] = parseInt(temp[0]);
         y[flag] = parseInt(temp[1]);
         flag++;
     }

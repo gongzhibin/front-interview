@@ -1,17 +1,17 @@
 // 明确绑定 的优先级 高于 隐含绑定，
 // 隐含绑定 的优先级 高于 默认绑定
 function foo() {
-	console.log( this.a );
+    console.log( this.a );
 }
 
 var obj1 = {
-	a: 2,
-	foo: foo
+    a: 2,
+    foo: foo
 };
 
 var obj2 = {
-	a: 3,
-	foo: foo
+    a: 3,
+    foo: foo
 };
 
 obj1.foo(); // 2

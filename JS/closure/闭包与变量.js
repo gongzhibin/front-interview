@@ -21,7 +21,7 @@ function count1() {
             (function (n) {
                 return function () {
                     return n * n;
-                }
+                };
             })(i)
         );
     }

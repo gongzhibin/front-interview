@@ -1,35 +1,35 @@
-console.log("start");
+console.log('start');
 process.nextTick(() => { // 微1.1
-  console.log("a");
-  setImmediate(() => {
-    console.log("d");
-  });
-  new Promise(res => res()).then(() => {
-    console.log("e");
-    process.nextTick(() => {
-      console.log("f");
+    console.log('a');
+    setImmediate(() => {
+        console.log('d');
     });
-    new Promise(r => {
-      r()
-    }).then(() => {
-      console.log("g");
+    new Promise(res => res()).then(() => {
+        console.log('e');
+        process.nextTick(() => {
+            console.log('f');
+        });
+        new Promise(r => {
+            r();
+        }).then(() => {
+            console.log('g');
+        });
+        setTimeout(() => {
+            console.log('h');
+        });
     });
-    setTimeout(() => {
-      console.log("h");
-    });
-  });
 });
 
 setImmediate(() => { // 宏1.1
-  console.log("b");
-  process.nextTick(() => {
-    console.log("c");
-  });
-  new Promise(res => res()).then(() => {
-    console.log("i");
-  });
+    console.log('b');
+    process.nextTick(() => {
+        console.log('c');
+    });
+    new Promise(res => res()).then(() => {
+        console.log('i');
+    });
 });
-console.log("end");
+console.log('end');
 
 // start end a e f g h b c i d
 // 正确： start end a e g f h b d c i

@@ -7,10 +7,10 @@ var foo = {
             return this.x;
         }
     }
-}
+};
 
 var go = foo.baz.bar;
 // var a = go();
 // var b = foo.baz.bar();
 console.log(go());
-console.log(foo.baz.bar())
+console.log(foo.baz.bar());

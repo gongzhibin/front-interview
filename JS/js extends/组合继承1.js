@@ -3,7 +3,7 @@ function person(name) {
 }
 person.prototype.sayName = function () {
     return this.name;
-}
+};
 
 var son = new person('zxlg');
 var sonName = son.sayName();

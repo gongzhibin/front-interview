@@ -15,7 +15,17 @@ async function async2() {
 console.log("script start");
 
 setTimeout(function () {
-    console.log("settimeout");
+    console.log("settimeout1");
+    new Promise(function (resolve) {
+        console.log("promise5");
+        resolve();
+    }).then(function () {
+        console.log("promise6");
+    })
+},0);
+
+setTimeout(function () {
+    console.log("settimeout2");
 },0);
 
 async1();
@@ -25,6 +35,12 @@ new Promise(function (resolve) {
     resolve();
 }).then(function () {
     console.log("promise2----node1---browser2");
+    new Promise(function (resolve) {
+        console.log("promise3");
+        resolve();
+    }).then(function () {
+        console.log("promise4");
+    })
 });
 console.log('script end');
 

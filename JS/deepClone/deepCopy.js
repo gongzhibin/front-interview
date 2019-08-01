@@ -11,11 +11,11 @@ function deepCopy(obj,res){
     return res;
 }
 
-var a = {"name":123}
+var a = {'name':123};
 
-var b = {"age":30,"obj":{
-    "test":123
-}}
+var b = {'age':30,'obj':{
+    'test':123
+}};
 
 c = deepCopy(a,b);
 console.log(c.toString());

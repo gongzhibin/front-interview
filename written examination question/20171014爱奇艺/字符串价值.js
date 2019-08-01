@@ -15,12 +15,12 @@ function solution(str, num) {
     }
     arr.sort(function (a, b) {
         return b - a;
-    })
+    });
     for (var i = 0; i < num; i++) {
         arr[0]--;
         arr.sort(function (a, b) {
             return b - a;
-        })
+        });
     }
     for (var i = 0; i < arr.length; i++) {
         count += arr[i] * arr[i];

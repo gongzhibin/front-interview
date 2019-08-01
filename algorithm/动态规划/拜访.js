@@ -55,7 +55,7 @@ var getDis = function (map, n, m) {
         }
     }
     return dp[x2][y2];
-}
+};
 
 //调用函数
 var map = [[-1, 1, 0], [2, 0, 0]];

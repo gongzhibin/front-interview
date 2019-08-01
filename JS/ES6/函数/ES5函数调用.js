@@ -2,7 +2,7 @@ function Person(name) {
     if (this instanceof Person) {
         this.name = name;
     } else {
-        throw new Error('必须通过new关键字调用')
+        throw new Error('必须通过new关键字调用');
     }
 }
 

@@ -8,7 +8,7 @@ function shellSort(arr) {
                 j -= gap;
             }
         }
-    };
+    }
     return arr;
 }
 const sort = shellSort([9, 8, 7, 6, 5, 4, 3, 2, 1]);

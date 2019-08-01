@@ -17,7 +17,7 @@ function isPrime(num) {
     } else if (num == 2) {
         return true;
     }
-    var sqrt = Math.ceil(Math.sqrt(num))
+    var sqrt = Math.ceil(Math.sqrt(num));
     for (var i = 2; i <= sqrt; i++) {
         if (num % i == 0) {
             return false;

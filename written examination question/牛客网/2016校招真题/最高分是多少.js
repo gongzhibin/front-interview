@@ -110,4 +110,4 @@ var max = function (arr) {
         }
     }
     return max;
-}
+};

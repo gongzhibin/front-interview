@@ -8,7 +8,7 @@ function solution(str) {
     }
     sortArr.sort(function (a, b) {
         return a - b;
-    })
+    });
     for (var i = 0; i < arr.length; i++) {
         if (sortArr[i] !== arr[i]) {
             count++;

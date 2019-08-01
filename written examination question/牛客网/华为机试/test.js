@@ -33,7 +33,7 @@ var record = function (input) {
             var maskTemp = parseInt(mask[j]).toString(2);
             //不足8位前补0
             while (maskTemp.length < 8) {
-                maskTemp = '0' + maskTemp
+                maskTemp = '0' + maskTemp;
             }
             mask2 += maskTemp;
         }
@@ -85,12 +85,12 @@ var record = function (input) {
     if (ip[0] >= 240 && ip[0] <= 255) {
         answer[4]++;
     }
-}
+};
 
 var output = function () {
     console.log(answer.join(' '));
     answer = [0, 0, 0, 0, 0, 0, 0];
-}
+};
 
 var input_array = str.split(' ');
 for (var index = 0; index < input_array.length; index++) {

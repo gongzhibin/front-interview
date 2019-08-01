@@ -1,23 +1,23 @@
 var fooValue = { name: 'foo' };
 var barValue = { name: 'bar' };
 
-Object.defineProperty(global, "foo", {
+Object.defineProperty(global, 'foo', {
     get: function(){
-        console.log("get foo");
+        console.log('get foo');
         return fooValue;
     },
     set: function(newVal) {
-        console.log("set foo");
+        console.log('set foo');
         fooValue = newVal;
     }
 });
-Object.defineProperty(global, "bar", {
+Object.defineProperty(global, 'bar', {
     get: function(){
-      console.log("get bar");
-      return barValue;
+        console.log('get bar');
+        return barValue;
     },
     set: function(newVal) {
-        console.log("set bar");
+        console.log('set bar');
         barValue = newVal;
     }
 });

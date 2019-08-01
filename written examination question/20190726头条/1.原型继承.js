@@ -7,12 +7,12 @@ function Animal() {
 }
 
 Animal.prototype.eat = function(){
-  return 'can eat';
-}
+    return 'can eat';
+};
 
 function Dog() {
     this.name = 'dog';
-};
+}
 
 // function Dog() {
 //     Animal.apply(this, arguments); // apply super constructor.

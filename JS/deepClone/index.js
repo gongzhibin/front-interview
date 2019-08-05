@@ -1,43 +1,56 @@
-//If Object.create isn't already defined, we just do the simple shim,
-//without the second argument, since that's all we need here
-var object_create = Object.create;
-if (typeof object_create !== 'function') {
-    object_create = function(o) {
-        function F() {}
-        F.prototype = o;
-        return new F();
-    };
+function deepClone(source) {
+    const map = new WeakMap();
+
+    function clone(source) {
+        let res;
+        const exist = map.get(source);
+        if(exist) return exist;
+
+        if (typeof source === 'object' || typeof source === 'function') {
+            const Ctor = source.constructor;
+            switch (Ctor) {
+            case RegExp:
+                res = new Ctor(source);
+                break;
+            case Date:
+                res = new Ctor(source.getTime());
+                break;
+            case Function:
+                // https://stackoverflow.com/questions/1833588/javascript-clone-a-function
+                // res = new Ctor('return ' + source.toString());
+                res = source.bind(null); // apply, bind
+                break;
+            default:
+                res = new Ctor();
+            }
+            map.set(source, res);
+
+            for (let key in source) {
+                if (typeof source[key] === 'object' || typeof source[key] === 'function') {
+                    res[key] = clone(source[key]);
+                } else {
+                    res[key] = source[key];
+                }
+            }
+        } else {
+            res = source;
+        }
+        return res;
+    }
+    return clone(source);
 }
 
-function deepCopy(obj) {
-    if(obj == null || typeof(obj) !== 'object'){
-        return obj;
-    }
-    //make sure the returned object has the same prototype as the original
-    var ret = object_create(obj.constructor.prototype);
-    for(var key in obj){
-        ret[key] = deepCopy(obj[key]);
-    }
-    return ret;
-}
-
-
-// Function.prototype.clone = function() {
-//     var that = this;
-//     var temp = function temporary() { return that.apply(this, arguments); };
-//     for(var key in this) {
-//         if (this.hasOwnProperty(key)) {
-//             temp[key] = this[key];
-//         }
-//     }
-//     return temp;
-// };
-
-var obj = {
-    add: function() {
-        return 1;
-    }
+const obj = {
+    str: 'zxlg',
+    circle: {},
+    arr: [1, 2, 3],
+    add: (a, b) => {
+        return a + b;
+    },
+    reg: /asd/i,
+    time: new Date()
 };
+obj.circle.ctor = obj;
 
-var newObj = deepCopy(obj);
-console.log(newObj.add === obj.add);
+const newObj = deepClone(obj);
+console.log(typeof obj.add, newObj.add === obj.add);

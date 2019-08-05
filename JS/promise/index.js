@@ -47,43 +47,42 @@ class MyPromise {
         onRejected = isFunction(onRejected) ? onRejected : (err) => { throw err; };
 
         return new MyPromise((onNextFulfilled, onNextRejected) => {
+            const fulfilled = (value) => {
+                try {
+                    const res = onFulfilled(value);
+                    if (res instanceof MyPromise) {
+                        res.then(onNextFulfilled, onNextRejected);
+                    } else {
+                        onNextFulfilled(res);
+                    }
+                } catch (err) {
+                    onNextRejected(err);
+                }
+            };
+            const rejected = (error) => {
+                try {
+                    const err = onRejected(error);
+                    if (err instanceof MyPromise) {
+                        err.then(onNextFulfilled, onNextRejected);
+                    } else {
+                        onNextRejected(err);
+                    }
+                } catch (err) {
+                    onNextRejected(err);
+                }
+            };
+
             switch (_status) {
             /* eslint-disable */
                 case PENDDING:
-                    const fulfilled = (value) => {
-                        try {
-                            const res = onFulfilled(value);
-                            if (res instanceof MyPromise) {
-                                res.then(onNextFulfilled, onNextRejected);
-                            } else {
-                                onNextFulfilled(res);
-                            }
-                        } catch (err) {
-                            onNextRejected(err);
-                        }
-                    };
-                    const rejected = (error) => {
-                        try {
-                            const err = onRejected(error);
-                            if (err instanceof MyPromise) {
-                                err.then(onNextFulfilled, onNextRejected);
-                            } else {
-                                onNextRejected(err);
-                            }
-                        } catch (err) {
-                            onNextRejected(err);
-                        }
-                    };
                     this._onFulfilledCallBacks.push(fulfilled);
                     this._onRejectedCallBacks.push(rejected);
                     break;
                 case FULFILLED:
-                    const res = onFulfilled(_value);
-                    onNextFulfilled(res);
+                    fulfilled(_value);
                     break;
                 case REJECTED:
-                    const err = onRejected(_value);
-                    onNextRejected(err);
+                    rejected(_value);
                     break;
             }
             /* eslint-enable */
@@ -94,8 +93,12 @@ class MyPromise {
         this.then(undefined, onRejected);
     }
 
-    finally() {
-
+    finally(callback) {
+        return this.then((value) => {
+            MyPromise.resolve(callback()).then(() => value);
+        }, (err) => {
+            MyPromise.resolve(callback()).then(() => { throw err; });
+        });
     }
 
     static resolve(value) {

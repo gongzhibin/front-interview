@@ -17,8 +17,8 @@
 
 const REGION_NAME = ['A', 'B', 'C', 'D'];
 const SEAT_STATUS = ['init', 'assigning', 'assigned'];
-const SECTOR = [50, 100, 2]; // 第一排， 最后一排， 递增值
-// const SECTOR = [5, 5, 1];
+// const SECTOR = [50, 100, 2]; // 第一排， 最后一排， 递增值
+const SECTOR = [5, 5, 1];
 // const TIME = 30 * 60;
 
 class BookingSystem {
@@ -43,7 +43,6 @@ class BookingSystem {
         const { orderId } = orderInfo;
         this.orderList[orderId] = orderInfo;
 
-        // TEST: 打印订单信息
         this._print(orderInfo);
 
         // NEXT: 监听订单状态，定时触发释放座位并进行座位状态处理
@@ -69,6 +68,7 @@ class BookingSystem {
         return newOrderInfo;
     }
 
+    // 超时失效订单和座位信息调整
     _timeout({ orderId }) {
         const orderInfo = this.orderList[orderId];
         const { status } = orderInfo;
@@ -96,8 +96,7 @@ class BookingSystem {
         // 座位状态锁定
         seatsInfo.forEach(({ raw }, index) => {
             const [rowIndex, columnIndex] = raw;
-            this.region[rowIndex][columnIndex] = { user,
-                status: SEAT_STATUS[2] };
+            this.region[rowIndex][columnIndex] = { user, status: SEAT_STATUS[2] };
         });
         // 清除定时触发函数
         orderInfo.status = SEAT_STATUS[2];
@@ -130,28 +129,26 @@ class BookingSystem {
             region[i] = [];
             const columnLength = start + Math.floor(i / 4) * step;
             // remain结构
-            remain[i] = { rowIndex: i,
-                remainNum: columnLength };
+            remain[i] = { rowIndex: i, remainNum: columnLength };
 
             // connectedRemain结构
-            connectedRemain[i] = { rowIndex: i,
+            connectedRemain[i] = {
+                rowIndex: i,
                 sections: [
                     { start: 0, end: columnLength - 1, num: columnLength }
                 ],
-                remainNum: columnLength };
+                remainNum: columnLength
+            };
             remainSum += columnLength;
             for (let j = 0; j < columnLength; j += 1) {
                 // region结构
-                region[i][j] = { user: '',
-                    status: SEAT_STATUS[0] };
+                region[i][j] = { user: '', status: SEAT_STATUS[0] };
             }
         }
-        return { region,
-            remain,
-            connectedRemain,
-            remainSum };
+        return { region, remain, connectedRemain, remainSum };
     }
 
+    // 实际调用的预定函数，可供多行座位选择时进行递归调用
     _booking({ user, num, multiRows = {} }) {
         const { remain, connectedRemain, region, remainSum } = this;
         if (remainSum < num) {
@@ -175,6 +172,7 @@ class BookingSystem {
         return this._handleMultiRows({ remain, connectedRemain, region, user, num, multiRows });
     }
 
+    // 释放订单中的座位，并处理对应座位信息
     _releaseSeats({ orderId }) {
         const { remain } = this;
         const orderInfo = this.orderList[orderId];
@@ -185,8 +183,7 @@ class BookingSystem {
             seatsInfo.forEach(({ raw }) => {
                 const [rowIndex, columnIndex] = raw;
                 // region调整
-                this.region[rowIndex][columnIndex] = { user: '',
-                    status: SEAT_STATUS[0] };
+                this.region[rowIndex][columnIndex] = { user: '', status: SEAT_STATUS[0] };
 
                 // remain调整
                 const remainIndex = this._getRemainIndexByRegionIndex({ remain: this.remain, regionRowIndex: rowIndex });
@@ -338,19 +335,16 @@ class BookingSystem {
 
     // 保存连座座位信息到region数组中，返回给购票用户座位信息
     _saveSeatsInfo({ region, rowIndex, start, num, user, status }) {
-        const orderInfo = { orderId: this.orderId,
-            user,
-            num,
-            status,
-            seatsInfo: [] };
+        const orderInfo = { orderId: this.orderId, user, num, status, seatsInfo: [] };
         for (let i = start; i < start + num; i += 1) {
-            region[rowIndex][i] = { user,
-                status };
+            region[rowIndex][i] = { user, status };
             const regionName = REGION_NAME[rowIndex % 4];
-            orderInfo.seatsInfo.push({ regionName,
+            orderInfo.seatsInfo.push({
+                regionName,
                 raw: [rowIndex, i],
                 rowIndex: Math.floor(rowIndex / 4) + 1, // 加1显示符合用户期望
-                columnIndex: i + 1 });
+                columnIndex: i + 1
+            });
         }
         return { newRegion: region, orderInfo };
     }
@@ -385,6 +379,7 @@ class BookingSystem {
         }
     }
 
+    // 打印订单信息
     _print(orderInfo = {}) {
         const { orderId, num, user, status, seatsInfo } = orderInfo;
         const seats = seatsInfo.reduce((ac, { regionName, rowIndex, columnIndex }) => `${ac}${regionName}[${rowIndex}][${columnIndex}], `, '');

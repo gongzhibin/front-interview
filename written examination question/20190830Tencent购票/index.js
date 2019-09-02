@@ -1,15 +1,15 @@
 /**
  * 购票系统(类似铁路购票系统)
- * 
+ *
  * 1. 座位：为4个扇形区域ABCD，第一排50个座位，最后一排100个座位
- * 
+ *
  * 2. 需求：
  *         a. 用户一次性购买1-5张票;
  *         b. 系统随机分配座位
- * 
+ *
  * 3. 假设：
  *         a. 预定：用户一次性预定的票，座位尽量连座
- *         b: 待支付：预定完成未付钱30分钟后订单失效（座位状态处理）
+ *         b: 超时：预定完成未付钱30分钟后订单失效（座位状态处理）
  *         b. 支付成功：用户预定之后，付钱完毕表示该座位锁定成功（座位状态处理）
  *         c. 退票：座位回复初始状态（座位状态处理）
  *         f. 处理可能发生的高并发问题?
@@ -17,13 +17,15 @@
 
 const REGION_NAME = ['A', 'B', 'C', 'D'];
 const SEAT_STATUS = ['init', 'assigning', 'assigned'];
-// const SECTOR = [50, 100, 2];  // 第一排， 最后一排， 递增值
-const SECTOR = [5, 5, 1];
+const SECTOR = [50, 100, 2]; // 第一排， 最后一排， 递增值
+// const SECTOR = [5, 5, 1];
 const TIME = 30 * 60;
 
 class BookingSystem {
     constructor() {
-        let { remain, connectedRemain, region, remainSum } = this._initSectorRegion();
+        const {
+ remain, connectedRemain, region, remainSum 
+} = this._initSectorRegion();
         this.remain = remain;
         this.connectedRemain = connectedRemain;
         this.region = region;
@@ -36,58 +38,87 @@ class BookingSystem {
     booking(user, num) {
         this.orderId++;
         const orderInfo = this._booking({ user, num, multiRows: {} });
+        if (!orderInfo) {
+            return false;
+        }
+
         const { orderId } = orderInfo;
         this.orderList[orderId] = orderInfo;
 
         // TEST: 打印订单信息
         this._print(orderInfo);
 
-        // 监听订单状态，定时触发释放座位并进行座位状态处理
-        // setTimeout(() => {
-        //     const orderInfo = this.orderList[orderId];
-        //     const { status } = orderInfo;
-        //     if (status === status[1]) {
-        //         this._releaseSeats({ orderId });
-        //     }
-        // }, TIME * 1000);
+        // NEXT: 监听订单状态，定时触发释放座位并进行座位状态处理
 
-        // TEST: 有1/4概率触发
-        const emitFlag = Math.floor(Math.random() * 4 + 1) % 4 === 0;
-        if (emitFlag) {
-            console.log(`订单${orderId}失效`);
-            const { status } = orderInfo;
-            if (status === SEAT_STATUS[1]) {
-                this.orderList[orderId] = this._releaseSeats({ orderId });
+        // TEST: 有1/4概率触发超时失效，支付成功后， 有1/4触发退款
+        let newOrderInfo;
+        const emitTimeoutFlag = Math.floor(Math.random() * 4 + 1) % 4 === 0;
+        if (emitTimeoutFlag) {
+            newOrderInfo = this._releaseSeats({ orderId });
+            this._print(newOrderInfo);
+        } else {
+            newOrderInfo = this.pay({ orderId });
+            this._print(newOrderInfo);
+
+            const emitRefundFlag = Math.floor(Math.random() * 4 + 1) % 4 === 0;
+            if (emitRefundFlag) {
+                newOrderInfo = this.refund({ orderId });
+                this._print(newOrderInfo);
             }
-            this._print(this.orderList[orderId]);
         }
-        return this.orderList[orderId];
+
+        this.orderList[orderId] = newOrderInfo;
+        return newOrderInfo;
     }
 
+    _timeout({ orderId }) {
+        const { status } = orderInfo;
+        if (status !== SEAT_STATUS[1]) {
+            return [];
+        }
+
+        console.warn(`订单${orderId}失效`);
+        const newOrderInfo = this._releaseSeats({ orderId });
+        this._print(newOrderInfo);
+        return newOrderInfo;
+    }
 
     // 暴露的支付接口
-    pay(orderInfo) {
-        const { orderId, seatsInfo } = orderInfo;
-        // 调用支付接口
-        Promise.resolve('支付成功').then(() => {
-            // 座位状态锁定
+    pay({ orderId }) {
+        const orderInfo = this.orderList[orderId];
+        const { user, seatsInfo, status } = orderInfo;
+        if (status !== SEAT_STATUS[1]) {
+            return [];
+        }
+
+        // NEXT: 调用支付接口
+        console.log(`支付订单${orderId}`);
+
+        // 座位状态锁定
+        seatsInfo.forEach(({ raw }, index) => {
+            const [rowIndex, columnIndex] = raw;
             this.region[rowIndex][columnIndex] = {
-                name,
+                user,
                 status: SEAT_STATUS[2]
             };
-            // 清除定时触发函数
         });
+        // 清除定时触发函数
+        orderInfo.status = SEAT_STATUS[2];
+        return orderInfo;
     }
 
     // 暴露的退款接口
-    refund(orderInfo) {
+    refund({ orderId }) {
         // 释放座位
-        const { rowIndex, columnIndex } = orderInfo;
-        this.region[rowIndex][columnIndex] = {
-            name: '',
-            status: SEAT_STATUS[0]
-        };
-        // 处理退款
+        const orderInfo = this.orderList[orderId];
+        const { user, seatsInfo, status } = orderInfo;
+        if (status !== SEAT_STATUS[2]) {
+            return;
+        }
+        console.warn(`退款订单${orderId}`);
+        const newOrderInfo = this._releaseSeats({ orderId });
+        // NEXT: 处理退款
+        return newOrderInfo;
     }
 
     // 初始化扇形区域，四个区域放一起进行随机分配
@@ -119,7 +150,7 @@ class BookingSystem {
             for (let j = 0; j < columnLength; j++) {
                 // region结构
                 region[i][j] = {
-                    name: '',
+                    user: '',
                     status: SEAT_STATUS[0]
                 };
             }
@@ -133,27 +164,34 @@ class BookingSystem {
     }
 
     _booking({ user, num, multiRows = {} }) {
-        const { remain, connectedRemain, region, remainSum } = this;
+        const {
+ remain, connectedRemain, region, remainSum 
+} = this;
         if (remainSum < num) {
-            throw new Error('抱歉，暂无足够座位');
-            // console.error('抱歉，已无足够座位');
-            // return -1;
+            console.error('抱歉，已无足够座位');
+            return false;
         }
 
         // 处理单行连座
         const rowMaxConnectedNum = connectedRemain[connectedRemain.length - 1].remainNum;
         if (rowMaxConnectedNum >= num) {
-            return this._handleSigleRowConnectedSeats({ remain, connectedRemain, region, user, num });
+            return this._handleSigleRowConnectedSeats({
+ remain, connectedRemain, region, user, num 
+});
         }
 
         // 处理单行不连座
         const rowMaxNum = remain[remain.length - 1].remainNum;
         if (rowMaxNum >= num) {
-            return this._handleSigleRow({ remain, connectedRemain, region, user, num });
+            return this._handleSigleRow({
+ remain, connectedRemain, region, user, num 
+});
         }
 
         // 处理多行
-        return this._handleMultiRows({ remain, connectedRemain, region, user, num, multiRows });
+        return this._handleMultiRows({
+ remain, connectedRemain, region, user, num, multiRows 
+});
     }
 
     _releaseSeats({ orderId }) {
@@ -161,13 +199,13 @@ class BookingSystem {
         const orderInfo = this.orderList[orderId];
         const { status, seatsInfo } = orderInfo;
         let sum = 0;
-        if (status === SEAT_STATUS[1]) {
+        if (status !== SEAT_STATUS[0]) {
             orderInfo.status = SEAT_STATUS[0];
             seatsInfo.forEach(({ raw }) => {
                 const [rowIndex, columnIndex] = raw;
                 // region调整
                 this.region[rowIndex][columnIndex] = {
-                    name: '',
+                    user: '',
                     status: SEAT_STATUS[0]
                 };
 
@@ -180,9 +218,7 @@ class BookingSystem {
                 const connectedRemainIndex = this._getRemainIndexByRegionIndex({ remain: this.connectedRemain, regionRowIndex: rowIndex });
                 const connectedRemainRow = this.connectedRemain[connectedRemainIndex];
                 const { sections } = connectedRemainRow;
-                sections.sort((sectionA, sectionB) => {
-                    return sectionA.start - sectionB.start;
-                });
+                sections.sort((sectionA, sectionB) => sectionA.start - sectionB.start);
                 let left;
                 let right;
                 let newSectionIndex;
@@ -214,9 +250,7 @@ class BookingSystem {
                     const newSection = { start: columnIndex, end: columnIndex, num: 1 };
                     sections.splice(newSectionIndex, 0, newSection);
                 }
-                sections.sort((sectionA, sectionB) => {
-                    return sectionA.num - sectionB.num;
-                });
+                sections.sort((sectionA, sectionB) => sectionA.num - sectionB.num);
 
                 this.connectedRemain[connectedRemainIndex].sections = sections;
                 this.connectedRemain = this._sortConnectedRemain({ connectedRemain: this.connectedRemain, connectedRemainIndex });
@@ -230,14 +264,18 @@ class BookingSystem {
     }
 
     // 处理单行连座情况
-    _handleSigleRowConnectedSeats({ remain, connectedRemain, region, user, num }) {
+    _handleSigleRowConnectedSeats({
+ remain, connectedRemain, region, user, num 
+}) {
         // 获取随机的一行进行座位分配
         const { randowRemainIndex } = this._getRandomRow({ remain: connectedRemain, num });
         const { rowIndex, sections } = connectedRemain[randowRemainIndex];
         const { start, end } = sections[sections.length - 1];
 
         // 分配并保存座位信息
-        const { orderInfo, newRegion } = this._saveSeatsInfo({ region, rowIndex, start, num, user, status: SEAT_STATUS[1] });
+        const { orderInfo, newRegion } = this._saveSeatsInfo({
+ region, rowIndex, start, num, user, status: SEAT_STATUS[1] 
+});
 
         // 更新座位表
         this.region = newRegion;
@@ -274,14 +312,18 @@ class BookingSystem {
         // 每一行的最长连座排序
         const { sections } = connectedRemain[connectedRemainIndex];
         const sectionTarget = sections[sectionIndex || sections.length - 1];
-        const sectionTargetIndex = this._search({ arr: sections, sortBy: 'num', target: sectionTarget, left: 0, right: sections.length - 1 });
+        const sectionTargetIndex = this._search({
+ arr: sections, sortBy: 'num', target: sectionTarget, left: 0, right: sections.length - 1 
+});
         sections.splice(sectionIndex || sections.length - 1, 1);
         sections.splice(sectionTargetIndex, 0, sectionTarget);
         connectedRemain[connectedRemainIndex].remainNum = sections[sections.length - 1].num || 0;
 
         // 所有剩余连座行排序
         const connectedRemainTarget = connectedRemain[connectedRemainIndex];
-        const connectedRemainTargetIndex = this._search({ arr: connectedRemain, sortBy: 'remainNum', target: connectedRemainTarget, left: 0, right: connectedRemain.length - 1 });
+        const connectedRemainTargetIndex = this._search({
+ arr: connectedRemain, sortBy: 'remainNum', target: connectedRemainTarget, left: 0, right: connectedRemain.length - 1 
+});
         connectedRemain.splice(connectedRemainIndex, 1);
         connectedRemain.splice(connectedRemainTargetIndex, 0, connectedRemainTarget);
 
@@ -289,26 +331,38 @@ class BookingSystem {
     }
 
     // 处理单行不连座情况
-    _handleSigleRow({ remain, connectedRemain, region, user, num }) {
+    _handleSigleRow({
+ remain, connectedRemain, region, user, num 
+}) {
         const { remainNum } = connectedRemain[connectedRemain.length - 1];
 
         // 递归调用单行连座
         if (remainNum < num) {
-            const connectedOrderInfo = this._handleSigleRowConnectedSeats({ remain, connectedRemain, region, user, num: remainNum });
-            const otherOrderInfo = this._handleSigleRow({ remain, connectedRemain, region, user, num: num - remainNum });
+            const connectedOrderInfo = this._handleSigleRowConnectedSeats({
+ remain, connectedRemain, region, user, num: remainNum 
+});
+            const otherOrderInfo = this._handleSigleRow({
+ remain, connectedRemain, region, user, num: num - remainNum 
+});
             return { ...connectedOrderInfo, num: (connectedOrderInfo.num + otherOrderInfo.num), seatsInfo: [...connectedOrderInfo.seatsInfo, ...otherOrderInfo.seatsInfo] };
         }
 
-        const orderInfo = this._handleSigleRowConnectedSeats({ remain, connectedRemain, region, user, num: remainNum });
+        const orderInfo = this._handleSigleRowConnectedSeats({
+ remain, connectedRemain, region, user, num: remainNum 
+});
         return orderInfo;
     }
 
     // 处理无法连座时，分配多行不连座的座位
-    _handleMultiRows({ remain, connectedRemain, region, user, num, multiRows = {} }) {
+    _handleMultiRows({
+ remain, connectedRemain, region, user, num, multiRows = {} 
+}) {
         const rowMax = remain[remain.length - 1].remainNum;
-        const sigleOrderInfo = this._handleSigleRow({ remain, connectedRemain, region, user, num: rowMax });
+        const sigleOrderInfo = this._handleSigleRow({
+ remain, connectedRemain, region, user, num: rowMax 
+});
         // 递归调用单行处理
-        let remainOrderInfo = num - rowMax > 0
+        const remainOrderInfo = num - rowMax > 0
             ? this._booking({ user, num: num - rowMax, multiRows })
             : {};
         return { ...sigleOrderInfo, num: (multiRows.num || 0 + sigleOrderInfo.num + remainOrderInfo.num), seatsInfo: [...(multiRows.seatsInfo || []), ...sigleOrderInfo.seatsInfo, ...remainOrderInfo.seatsInfo] };
@@ -317,13 +371,17 @@ class BookingSystem {
     // 获取随机的一行进行座位分配
     _getRandomRow({ remain, num }) {
         // 多行处理规避了返回值为-1的情况
-        const remainStartIndex = this._search({ arr: remain, sortBy: 'remainNum', target: num, left: 0, right: remain.length - 1 }); // 符合条件的有序数组的起始值
+        const remainStartIndex = this._search({
+ arr: remain, sortBy: 'remainNum', target: num, left: 0, right: remain.length - 1 
+}); // 符合条件的有序数组的起始值
         const randowRemainIndex = Math.floor(Math.random() * (remain.length - 1 - remainStartIndex + 1) + remainStartIndex); // 生成最终的分配座位行的索引
         return { randowRemainIndex };
     }
 
     // 保存连座座位信息到region数组中，返回给购票用户座位信息
-    _saveSeatsInfo({ region, rowIndex, start, num, user, status }) {
+    _saveSeatsInfo({
+ region, rowIndex, start, num, user, status 
+}) {
         const orderInfo = {
             orderId: this.orderId,
             user,
@@ -333,7 +391,7 @@ class BookingSystem {
         };
         for (let i = start; i < start + num; i++) {
             region[rowIndex][i] = {
-                name: user,
+                user,
                 status
             };
             const regionName = REGION_NAME[rowIndex % 4];
@@ -341,7 +399,7 @@ class BookingSystem {
                 regionName,
                 raw: [rowIndex, i],
                 rowIndex: Math.floor(rowIndex / 4) + 1, // 加1显示符合用户期望
-                columnIndex: i + 1,
+                columnIndex: i + 1
             });
         }
         return { newRegion: region, orderInfo };
@@ -350,7 +408,9 @@ class BookingSystem {
     // 剩余座位数升序排列：二分插入保持有序
     _sortRemain({ remain, remainIndex, end }) {
         const target = remain[remainIndex];
-        const targetIndex = this._search({ arr: remain, sortBy: 'remainNum', target, left: 0, right: end || remainIndex }); // 传入的remainIndex规避了返回值为-1的情况
+        const targetIndex = this._search({
+ arr: remain, sortBy: 'remainNum', target, left: 0, right: end || remainIndex 
+}); // 传入的remainIndex规避了返回值为-1的情况
         remain.splice(remainIndex, 1);
         remain.splice(targetIndex, 0, target);
 
@@ -358,8 +418,10 @@ class BookingSystem {
     }
 
     // 找出arr中大于等于target的最小索引值
-    _search({ arr, sortBy, target, left, right }) {
-        let index = Math.floor((left + right) / 2);
+    _search({
+ arr, sortBy, target, left, right 
+}) {
+        const index = Math.floor((left + right) / 2);
         if (left > right) {
             if (left < arr.length) {
                 return left;
@@ -370,27 +432,38 @@ class BookingSystem {
         const temp = typeof arr[index] === 'number' ? arr[index] : arr[index][sortBy];
         target = typeof target === 'number' ? target : target[sortBy];
         if (temp < target) {
-            return this._search({ arr, sortBy, target, left: index + 1, right });
+            return this._search({
+ arr, sortBy, target, left: index + 1, right 
+});
         }
         if (temp >= target) {
-            return this._search({ arr, sortBy, target, left, right: index - 1 });
+            return this._search({
+ arr, sortBy, target, left, right: index - 1 
+});
         }
     }
 
     _print(orderInfo = {}) {
-        const { orderId, num, user, status, seatsInfo } = orderInfo;
-        const seats = seatsInfo.reduce((ac, { regionName, rowIndex, columnIndex }) => ac + `${regionName}[${rowIndex}][${columnIndex}], `, '');
+        const {
+ orderId, num, user, status, seatsInfo 
+} = orderInfo;
+        const seats = seatsInfo.reduce((ac, { regionName, rowIndex, columnIndex }) => `${ac  }${regionName}[${rowIndex}][${columnIndex}], `, '');
         const print = `${user}订单${orderId}状态为${status}, 座位共${num}个: ${seats} 剩余总座位数共${this.remainSum}个`;
         console.log(print);
     }
 }
 
 const sys = new BookingSystem();
-for (let i = 1; ; i++) {
-    const name = 'name' + i;
+let canBooking = true;
+let i = 1;
+while (canBooking) {
+    const name = `name${  i++}`;
     const num = Math.floor(Math.random() * 5 + 1); // 随机生成1-5个座位进行处理
     // const num = 5;
-    sys.booking(name, num);
+    canBooking = sys.booking(name, num);
+    if (!canBooking) {
+        console.log('跳出循环');
+    }
 }
 
 // export default BookingSystem;

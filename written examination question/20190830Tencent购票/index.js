@@ -37,6 +37,7 @@ class BookingSystem {
         this.orderId += 1;
         const orderInfo = this._booking({ user, num, multiRows: {} });
         if (!orderInfo) {
+            console.error(`${user}订单${this.orderId}预定${num}个座位未成功, 抱歉，已无足够座位`);
             return false;
         }
 
@@ -51,7 +52,7 @@ class BookingSystem {
         let newOrderInfo;
         const emitTimeoutFlag = Math.floor(Math.random() * 4 + 1) % 4 === 0;
         if (emitTimeoutFlag) {
-            newOrderInfo = this._releaseSeats({ orderId });
+            newOrderInfo = this.timeout({ orderId });
             this._print(newOrderInfo);
         } else {
             newOrderInfo = this.pay({ orderId });
@@ -68,8 +69,8 @@ class BookingSystem {
         return newOrderInfo;
     }
 
-    // 超时失效订单和座位信息调整
-    _timeout({ orderId }) {
+    // 暴露的超时接口
+    timeout({ orderId }) {
         const orderInfo = this.orderList[orderId];
         const { status } = orderInfo;
         if (status !== SEAT_STATUS[1]) {
@@ -78,7 +79,6 @@ class BookingSystem {
 
         console.warn(`订单${orderId}失效`);
         const newOrderInfo = this._releaseSeats({ orderId });
-        this._print(newOrderInfo);
         return newOrderInfo;
     }
 
@@ -152,7 +152,6 @@ class BookingSystem {
     _booking({ user, num, multiRows = {} }) {
         const { remain, connectedRemain, region, remainSum } = this;
         if (remainSum < num) {
-            console.error('抱歉，已无足够座位');
             return false;
         }
 
@@ -395,8 +394,9 @@ while (canBooking) {
     const name = `name${i}`;
     const num = Math.floor(Math.random() * 5 + 1); // 随机生成1-5个座位进行处理
     // const num = 5;
-    canBooking = sys.booking(name, num);
-    if (!canBooking) {
+    sys.booking(name, num);
+    if (sys.remainSum === 0) {
+        canBooking = false;
         console.log('跳出循环');
     }
     i += 1;

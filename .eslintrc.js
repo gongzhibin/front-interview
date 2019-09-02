@@ -158,7 +158,7 @@ module.exports = {
       // 强制在parseInt()使用基数参数
       "radix": 2,
       "no-shadow": 0,
-      "object-curly-newline": ["error", {
+      "object-curly-newline": [0, {
         "ObjectExpression": "never",
         "ObjectPattern": { "multiline": false },
         "ImportDeclaration": "never",
